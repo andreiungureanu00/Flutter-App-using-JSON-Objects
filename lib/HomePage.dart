@@ -106,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   onTap: () {
                                     Navigator.of(context)
                                         .push(MaterialPageRoute(
-                                      builder: (context) => ProductInfo(productId: snapShot.data[index]),
+                                      builder: (context) => ProductInfo(productId: snapShot.data[index].id),
                                     ));
                                   },
                                 ),
@@ -130,8 +130,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                     {
                                       Navigator.of(context)
                                           .push(MaterialPageRoute(
-                                        builder: (context) => ProductInfo(productId: snapShot.data[index],),
+                                        builder: (context) => ProductInfo(productId: snapShot.data[index].id),
                                       ));
+                                      debugPrint(snapShot.data[index].toString());
                                     }
                                   },
                                 ),
