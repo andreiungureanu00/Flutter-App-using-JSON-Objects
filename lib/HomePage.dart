@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:jsonget/Product.dart';
 import 'package:jsonget/ProductInfo.dart';
-import 'package:jsonget/ListItem.dart';
 import 'package:jsonget/SecondPage.dart';
 
 
@@ -22,32 +21,6 @@ class _MyHomePageState extends State<MyHomePage> {
   ScrollController controller;
   int top, bottom;
   int indexList;
-
-  _scrollListener() {
-    bottom = 0;
-    top = 1;
-
-    if (controller.offset >= controller.position.maxScrollExtent &&
-        !controller.position.outOfRange) {
-      setState(() {
-        bottom = 1;
-        top = 0;
-      });
-    }
-    if (controller.offset <= controller.position.minScrollExtent &&
-        !controller.position.outOfRange) {
-      setState(() {
-        top = 1;
-        bottom = 0;
-      });
-    }
-  }
-
-  void initState() {
-    controller = ScrollController();
-    controller.addListener(_scrollListener);
-    super.initState();
-  }
 
   Future<List<Product>> getProducts() async {
     var data = await http

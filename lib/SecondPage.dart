@@ -17,34 +17,6 @@ class SecondPage extends StatefulWidget {
 }
 
 class SecondPageState extends State<SecondPage> {
-  ScrollController controller;
-  int top, bottom;
-
-  _scrollListener() {
-    bottom = 0;
-    top = 1;
-
-    if (controller.offset >= controller.position.maxScrollExtent &&
-        !controller.position.outOfRange) {
-      setState(() {
-        bottom = 1;
-        top = 0;
-      });
-    }
-    if (controller.offset <= controller.position.minScrollExtent &&
-        !controller.position.outOfRange) {
-      setState(() {
-        top = 1;
-        bottom = 0;
-      });
-    }
-  }
-
-  void initState() {
-    controller = ScrollController();
-    controller.addListener(_scrollListener);
-    super.initState();
-  }
 
   Future<List<Product>> getProducts() async {
     var data = await http
@@ -86,7 +58,6 @@ class SecondPageState extends State<SecondPage> {
                     child: SizedBox(
                       height: 200.0,
                       child: new ListView.builder(
-                        controller: controller,
                         itemCount: snapShot.data.length,
                         itemBuilder: (BuildContext context, int index) {
                           return Container(
