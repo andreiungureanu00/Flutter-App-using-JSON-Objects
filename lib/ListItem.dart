@@ -65,7 +65,7 @@ class ListItemState extends State<ListItem> {
                               onTap: () {
                                 Navigator.of(context)
                                     .push(MaterialPageRoute(
-                                  builder: (context) => ProductInfo(indexList: null,),
+                                  builder: (context) => ProductInfo(productId: snapShot.data[index].id),
                                 ));
                               },
                             ),
@@ -89,7 +89,7 @@ class ListItemState extends State<ListItem> {
                                 {
                                   Navigator.of(context)
                                       .push(MaterialPageRoute(
-                                    builder: (context) => ProductInfo(indexList: null,),
+                                    builder: (context) => ProductInfo(productId: snapShot.data[index].id),
                                   ));
                                 }
                               },

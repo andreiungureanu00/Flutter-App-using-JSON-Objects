@@ -8,7 +8,6 @@ import 'package:jsonget/HomePage.dart';
 import 'package:jsonget/ListItem.dart';
 import 'package:jsonget/SecondPage.dart';
 
-import 'package:jsonget/listItem/listItem.dart';
 
 void main() {
   runApp(new MyApp());

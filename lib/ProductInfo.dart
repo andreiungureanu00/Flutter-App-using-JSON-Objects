@@ -5,30 +5,31 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:jsonget/Product.dart';
 import 'package:jsonget/HomePage.dart';
-import 'package:jsonget/ListItem.dart';
-import 'package:jsonget/SecondPage.dart';
 
 class ProductInfo extends StatefulWidget {
 
-  final int indexList;
+  final int productId;
 
-  ProductInfo({Key key, this.title, @required this.indexList}) : super(key: key);
+  ProductInfo({Key key, this.title, @required this.productId}) : super(key: key);
 
   final String title;
 
   @override
-  ProductInfoState createState() => ProductInfoState();
+  ProductInfoState createState() => ProductInfoState(productId);
 }
 
 class ProductInfoState extends State<ProductInfo> {
 
   Product product;
+  int productId;
+
+
+  ProductInfoState(this.productId);
 
   Future<Product> getProduct() async {
     String url = "http://mobile-test.devebs.net:5000/product?id=";
-    url = url + 2.toString();
 
-
+    url = url + 1.toString();
     var data = await http.get(url);
     var jsonData = json.decode(data.body);
 
