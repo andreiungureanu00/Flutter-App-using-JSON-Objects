@@ -39,12 +39,14 @@ class _ProductsPageScreenState extends State<ProductsPageScreen> {
             BlocBuilder<ProductsPageBloc, ProductsPageState>(
                 bloc: _bloc,
                 builder: (context, state) {
-                  return ListView.builder(
+                  return Expanded(
+                    child: ListView.builder(
                     controller: controller,
                     itemCount: _bloc.productList.length,
                     itemBuilder: (BuildContext context, int index) {
                       return ProductWidgetCell(_bloc.productList[index]);
                     },
+                  ),
                   );
                 }),
             RaisedButton(
