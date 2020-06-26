@@ -3,25 +3,25 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:jsonget/Product.dart';
+import 'package:jsonget/models/Product.dart';
 
-class ProductInfo extends StatefulWidget {
+class ProductInfoScreen extends StatefulWidget {
 
-  ProductInfo({Key key, this.title, this.productId}) : super(key: key);
+  ProductInfoScreen({Key key, this.title, this.productId}) : super(key: key);
 
   final String title;
   final int productId;
 
   @override
-  ProductInfoState createState() => ProductInfoState(productId);
+  ProductInfoScreenState createState() => ProductInfoScreenState(productId);
 }
 
-class ProductInfoState extends State<ProductInfo> {
+class ProductInfoScreenState extends State<ProductInfoScreen> {
 
   Product product;
   int productId;
 
-  ProductInfoState(this.productId);
+  ProductInfoScreenState(this.productId);
 
   Future<Product> getProduct() async {
     String url = "http://mobile-test.devebs.net:5000/product?id=";
