@@ -1,19 +1,26 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:jsonget/models/Product.dart';
+import 'package:jsonget/productsPage/ProductsPageScreen.dart';
+import 'package:jsonget/productsPage/bloc/products_page_bloc.dart';
 
 import '../productInfoPage/ProductInfoScreen.dart';
 
 class ProductWidgetCell extends StatefulWidget {
   final Product product;
+  final ProductsPageBloc productsPageBloc;
 
-  ProductWidgetCell(this.product);
+  ProductWidgetCell(this.product, this.productsPageBloc);
 
   @override
-  ProductWidgetCellState createState() => ProductWidgetCellState();
+  ProductWidgetCellState createState() => ProductWidgetCellState(productsPageBloc.database);
 }
 
 class ProductWidgetCellState extends State<ProductWidgetCell> {
+
+  final database;
+  ProductWidgetCellState(this.database);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -25,12 +32,13 @@ class ProductWidgetCellState extends State<ProductWidgetCell> {
               height: 250,
               width: 330,
               child: new Image.network(
-                  widget.product.imageUrl),//snapShot.data[index].imageUrl),
+                  widget.product.imageUrl), //snapShot.data[index].imageUrl),
             ),
             onTap: () {
               Navigator.of(context)
                   .push(MaterialPageRoute(
-                builder: (context) => ProductInfoScreen(productId: widget.product.id),
+                builder: (context) =>
+                    ProductInfoScreen(productId: widget.product.id),
               ));
             },
           ),
@@ -54,7 +62,8 @@ class ProductWidgetCellState extends State<ProductWidgetCell> {
               {
                 Navigator.of(context)
                     .push(MaterialPageRoute(
-                  builder: (context) => ProductInfoScreen(productId: widget.product.id),
+                  builder: (context) =>
+                      ProductInfoScreen(productId: widget.product.id),
                 ));
                 //debugPrint(snapShot.data[index].toString());
               }
@@ -79,7 +88,7 @@ class ProductWidgetCellState extends State<ProductWidgetCell> {
           Container(
             height: 35,
             width: 400,
-            margin: EdgeInsets.only(top: 10, bottom: 45),
+            margin: EdgeInsets.only(top: 10),
             child: Center(
               child: Text(
                 widget.product.price.toString() +
@@ -92,6 +101,28 @@ class ProductWidgetCellState extends State<ProductWidgetCell> {
               ),
             ),
           ),
+          Container(
+            height: 35,
+            width: 400,
+            margin: EdgeInsets.only(top: 10, bottom: 45),
+            child: Center(
+              child: Center(
+                  child: InkWell(
+                      child: Icon(
+                        Icons.favorite,
+                        size: 24.0,
+                      ),
+                      onTap: ()  {
+                         widget.productsPageBloc.setFavourite(database);
+                         widget.productsPageBloc.insertProduct(Product(widget.product.id,
+                         widget.product.title, widget.product.short_description, widget.product.imageUrl,
+                         widget.product.price, widget.product.details), database);
+                         //widget.productsPageBloc.printDb(database);
+                      },
+                  )
+              ),
+            ),
+          )
         ],
       ),
     );

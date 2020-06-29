@@ -6,23 +6,42 @@ import 'package:jsonget/productsPage/bloc/products_page_bloc.dart';
 import 'package:jsonget/productsPage/bloc/products_page_state.dart';
 
 class ProductsPageScreen extends StatefulWidget {
-  ProductsPageScreen({Key key, this.title}) : super(key: key);
+  ProductsPageScreen({Key key, this.title, this.database}) : super(key: key);
 
   final String title;
+  final database;
 
   @override
-  _ProductsPageScreenState createState() => _ProductsPageScreenState();
+  _ProductsPageScreenState createState() => _ProductsPageScreenState(database);
 }
 
 class _ProductsPageScreenState extends State<ProductsPageScreen> {
+
   ScrollController controller;
   ProductsPageBloc _bloc;
+  final database;
+
+  _ProductsPageScreenState(this.database);
 
   @override
   void initState() {
-    _bloc = ProductsPageBloc();
+    _bloc = ProductsPageBloc(database);
+    controller = new ScrollController();
+
+    // initial load
     _bloc.loadProducts();
     super.initState();
+
+    controller.addListener(() {
+      if (controller.position.pixels == controller.position.maxScrollExtent) {
+        _bloc.loadProducts();
+      }
+    });
+  }
+
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -44,22 +63,11 @@ class _ProductsPageScreenState extends State<ProductsPageScreen> {
                       controller: controller,
                       itemCount: _bloc.productList.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return ProductWidgetCell(_bloc.productList[index]);
+                        return ProductWidgetCell(_bloc.productList[index], _bloc);
                       },
                     ),
                   );
                 }),
-            RaisedButton(
-              child: Visibility(
-                child: Text("Next Page"),
-                maintainState: true,
-                visible: true,
-              ),
-              color: Colors.white,
-              onPressed: () {
-                _bloc.loadProducts();
-              },
-            ),
           ],
         ),
       ),

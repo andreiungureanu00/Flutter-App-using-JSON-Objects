@@ -1,3 +1,4 @@
+
 abstract class ProductsPageEvent extends Object {
   const ProductsPageEvent();
 }
