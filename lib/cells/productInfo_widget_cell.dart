@@ -1,26 +1,29 @@
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:jsonget/models/Product.dart';
-import 'package:jsonget/productsPage/ProductsPageScreen.dart';
-import 'package:jsonget/productsPage/bloc/products_page_bloc.dart';
 
-import '../productInfoPage/ProductInfoScreen.dart';
+class ProductInfoWidgetCell extends StatefulWidget {
 
-class ProductWidgetCell extends StatefulWidget {
   final Product product;
-  final ProductsPageBloc productsPageBloc;
 
-  ProductWidgetCell(this.product, this.productsPageBloc);
+  ProductInfoWidgetCell(this.product);
 
   @override
-  ProductWidgetCellState createState() => ProductWidgetCellState();
+  ProductInfoWidgetCellState createState() => ProductInfoWidgetCellState();
+
 }
 
-class ProductWidgetCellState extends State<ProductWidgetCell> {
+class ProductInfoWidgetCellState extends State<ProductInfoWidgetCell> {
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
+    return Column(
         children: <Widget>[
           InkWell(
             child: Container(
@@ -28,15 +31,8 @@ class ProductWidgetCellState extends State<ProductWidgetCell> {
               height: 250,
               width: 330,
               child: new Image.network(
-                  widget.product.imageUrl), //snapShot.data[index].imageUrl),
+                  widget.product.imageUrl),
             ),
-            onTap: () {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(
-                builder: (context) =>
-                    ProductInfoScreen(productId: widget.product.id),
-              ));
-            },
           ),
           InkWell(
             child: Container(
@@ -54,16 +50,6 @@ class ProductWidgetCellState extends State<ProductWidgetCell> {
                 ),
               ),
             ),
-            onTap: () {
-              {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(
-                  builder: (context) =>
-                      ProductInfoScreen(productId: widget.product.id),
-                ));
-                //debugPrint(snapShot.data[index].toString());
-              }
-            },
           ),
           Container(
             height: 35,
@@ -75,14 +61,14 @@ class ProductWidgetCellState extends State<ProductWidgetCell> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 12,
+                  fontSize: 15,
                   fontFamily: 'RobotMono',
                 ),
               ),
             ),
           ),
           Container(
-            height: 35,
+            height: 40,
             width: 400,
             margin: EdgeInsets.only(top: 10),
             child: Center(
@@ -98,22 +84,29 @@ class ProductWidgetCellState extends State<ProductWidgetCell> {
             ),
           ),
           Container(
-            height: 35,
+            height: 80,
             width: 400,
-            margin: EdgeInsets.only(top: 10, bottom: 45),
-            child: Center(
-              child: Center(
-                  child: InkWell(
-                      child: Icon(
-                        Icons.favorite,
-                        size: 24.0,
-                      )
-                  )
+            margin: EdgeInsets.only(top: 30, bottom: 45),
+            child: Container(
+              child: SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(),
+                  child: Center(
+                    child: Text(
+                      widget.product.details,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
-          )
+          ),
         ],
-      ),
     );
   }
+
 }

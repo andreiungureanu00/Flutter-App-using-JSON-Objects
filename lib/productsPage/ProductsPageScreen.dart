@@ -6,26 +6,22 @@ import 'package:jsonget/productsPage/bloc/products_page_bloc.dart';
 import 'package:jsonget/productsPage/bloc/products_page_state.dart';
 
 class ProductsPageScreen extends StatefulWidget {
-  ProductsPageScreen({Key key, this.title, this.database}) : super(key: key);
+  ProductsPageScreen({Key key, this.title}) : super(key: key);
 
   final String title;
-  final database;
 
   @override
-  _ProductsPageScreenState createState() => _ProductsPageScreenState(database);
+  _ProductsPageScreenState createState() => _ProductsPageScreenState();
 }
 
 class _ProductsPageScreenState extends State<ProductsPageScreen> {
 
   ScrollController controller;
   ProductsPageBloc _bloc;
-  final database;
-
-  _ProductsPageScreenState(this.database);
 
   @override
   void initState() {
-    _bloc = ProductsPageBloc(database);
+    _bloc = ProductsPageBloc();
     controller = new ScrollController();
 
     // initial load
