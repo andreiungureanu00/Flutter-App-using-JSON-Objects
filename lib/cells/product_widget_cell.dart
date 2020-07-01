@@ -1,16 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:jsonget/database/favorite_singleton.dart';
 import 'package:jsonget/models/Product.dart';
-import 'package:jsonget/productsPage/ProductsPageScreen.dart';
-import 'package:jsonget/productsPage/bloc/products_page_bloc.dart';
 
 import '../productInfoPage/ProductInfoScreen.dart';
 
 class ProductWidgetCell extends StatefulWidget {
   final Product product;
-  final ProductsPageBloc productsPageBloc;
 
-  ProductWidgetCell(this.product, this.productsPageBloc);
+  ProductWidgetCell(this.product);
 
   @override
   ProductWidgetCellState createState() => ProductWidgetCellState();
@@ -31,8 +29,7 @@ class ProductWidgetCellState extends State<ProductWidgetCell> {
                   widget.product.imageUrl), //snapShot.data[index].imageUrl),
             ),
             onTap: () {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(
+              Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) =>
                     ProductInfoScreen(productId: widget.product.id),
               ));
@@ -56,8 +53,7 @@ class ProductWidgetCellState extends State<ProductWidgetCell> {
             ),
             onTap: () {
               {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(
+                Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) =>
                       ProductInfoScreen(productId: widget.product.id),
                 ));
@@ -86,14 +82,41 @@ class ProductWidgetCellState extends State<ProductWidgetCell> {
             width: 400,
             margin: EdgeInsets.only(top: 10),
             child: Center(
-              child: Text(
-                widget.product.price.toString() +
-                    '€',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Color(0xff0101DF),
-                    fontSize: 23,
-                    fontFamily: 'RobotMono'),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    widget.product.sale_precent > 0
+                        ? (widget.product.price *
+                                    (100 - widget.product.sale_precent) ~/
+                                    100)
+                                .toString() +
+                            '€'
+                        : " ",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Color(0xff0101DF),
+                        fontSize: 23,
+                        fontFamily: 'RobotMono'),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Text(
+                    widget.product.price.toString() + '€',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: widget.product.sale_precent > 0
+                            ? Color(0xff7F7F7F)
+                            : Color(0xff0101DF),
+                        decoration: widget.product.sale_precent > 0
+                            ? TextDecoration.lineThrough
+                            : TextDecoration.none,
+                        fontSize: widget.product.sale_precent > 0 ? 18 : 23,
+                        fontFamily: 'RobotMono'),
+                  ),
+                ],
               ),
             ),
           ),
@@ -104,12 +127,15 @@ class ProductWidgetCellState extends State<ProductWidgetCell> {
             child: Center(
               child: Center(
                   child: InkWell(
-                      child: Icon(
-                        Icons.favorite,
-                        size: 24.0,
-                      )
-                  )
-              ),
+                child: Icon(
+                  Icons.favorite,
+                  size: 24.0,
+                  color: widget.product.isFavourite? Colors.red : Colors.black26,
+                ),
+                onTap: () {
+                  FavouriteSingleton().addToFavourite(widget.product.id);
+                },
+              )),
             ),
           )
         ],

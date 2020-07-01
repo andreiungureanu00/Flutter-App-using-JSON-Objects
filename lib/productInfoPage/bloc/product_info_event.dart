@@ -4,3 +4,4 @@ abstract class ProductInfoEvent extends Object {
 }
 
 class LoadProduct extends ProductInfoEvent{}
+class ReloadProduct extends ProductInfoEvent{}

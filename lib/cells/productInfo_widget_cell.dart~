@@ -24,7 +24,7 @@ class ProductInfoWidgetCellState extends State<ProductInfoWidgetCell> {
       child: Expanded(
         child: Container(
           child: SingleChildScrollView(
-            child: Column(
+            child: Stack(
               children: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,

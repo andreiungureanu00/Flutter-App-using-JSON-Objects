@@ -12,10 +12,12 @@ class Product {
   String imageUrl;
   int price;
   String details;
+  // ignore: non_constant_identifier_names
+  int sale_precent;
   bool isFavourite;
 
   Product(
-      this.id, this.title, this.short_description, this.imageUrl, this.price, this.details, this.isFavourite);
+      this.id, this.title, this.short_description, this.imageUrl, this.price, this.details, this.sale_precent, this.isFavourite);
 
 
   Map<String, dynamic> toMap() {

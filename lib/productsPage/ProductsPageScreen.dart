@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jsonget/cells/product_widget_cell.dart';
+import 'package:jsonget/database/favorite_singleton.dart';
 import 'package:jsonget/productsPage/bloc/products_page_bloc.dart';
 import 'package:jsonget/productsPage/bloc/products_page_state.dart';
 
@@ -14,7 +15,7 @@ class ProductsPageScreen extends StatefulWidget {
   _ProductsPageScreenState createState() => _ProductsPageScreenState();
 }
 
-class _ProductsPageScreenState extends State<ProductsPageScreen> {
+class _ProductsPageScreenState extends State<ProductsPageScreen> with FavouriteEvents{
 
   ScrollController controller;
   ProductsPageBloc _bloc;
@@ -26,6 +27,8 @@ class _ProductsPageScreenState extends State<ProductsPageScreen> {
 
     // initial load
     _bloc.loadProducts();
+    FavouriteSingleton().initDb();
+    FavouriteSingleton().addListener(this);
     super.initState();
 
     controller.addListener(() {
@@ -37,6 +40,7 @@ class _ProductsPageScreenState extends State<ProductsPageScreen> {
 
   void dispose() {
     controller.dispose();
+    FavouriteSingleton().removeListener(this);
     super.dispose();
   }
 
@@ -47,26 +51,53 @@ class _ProductsPageScreenState extends State<ProductsPageScreen> {
       appBar: AppBar(
           title: Center(
         child: Text("Online Shop"),
-      )),
-      body: Center(
-        child: Column(
+      ),
+      actions: [
+        Row(
+          children: [
+            Icon(
+              Icons.favorite,
+              color: Colors.red,
+            ),
+            SizedBox(
+              width: 5,
+            )
+          ],
+        )
+      ],),
+      body: Column(
           children: <Widget>[
             BlocBuilder<ProductsPageBloc, ProductsPageState>(
                 bloc: _bloc,
                 builder: (context, state) {
-                  return Expanded(
-                    child: ListView.builder(
-                      controller: controller,
-                      itemCount: _bloc.productList.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return ProductWidgetCell(_bloc.productList[index], _bloc);
-                      },
-                    ),
-                  );
+                  if (_bloc.productList != null) {
+                    return Expanded(
+                      child: ListView.builder(
+                        controller: controller,
+                        itemCount: _bloc.productList.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return ProductWidgetCell(_bloc.productList[index]);
+                        },
+                      ),
+                    );
+                  }
+                  else {
+                    return CircularProgressIndicator(
+                    );
+                  }
                 }),
           ],
         ),
-      ),
     );
+  }
+
+  @override
+  void onFavouriteAdded(int productId) {
+    _bloc.onFavouriteAdded(productId);
+  }
+
+  @override
+  void onFavouriteDeleted(int productId) {
+    _bloc.onFavouriteRemoved(productId);
   }
 }
