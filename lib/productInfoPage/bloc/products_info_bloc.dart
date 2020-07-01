@@ -41,6 +41,9 @@ class ProductInfoBloc extends Bloc<ProductInfoEvent, ProductInfoState> {
       await getProduct(productId);
       yield ProductLoaded();
     }
+    if(event is ReloadProduct){
+      yield ProductLoaded();
+    }
   }
 
   onFavouriteAdded(int productID) {
