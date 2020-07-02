@@ -21,7 +21,7 @@ class Product {
     }
     map['title'] = title;
     map['short_description'] = short_description;
-//    map['imageUrl'] = imageUrl;
+    map['imageUrl'] = imageUrl;
     map['price'] = price;
     map['details'] = details;
     map['sale_precent'] = sale_precent;

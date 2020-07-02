@@ -12,21 +12,6 @@ class ProductsPageBloc extends Bloc<ProductsPageEvent, ProductsPageState> {
   @override
   ProductsPageState get initialState => ProductsInit();
 
-  Future<void> _getProducts() async {
-    Response response;
-    Dio dio = new Dio();
-    response = await dio.get(
-        "http://mobile-test.devebs.net:5000/products?limit=$limit&offset=$offset");
-
-    for (var i in response.data) {
-      Product product = Product(i["id"], i["title"], i["short_description"],
-          i["image"], i["price"], i["details"], i["sale_precent"], false);
-      productList.add(product);
-    }
-    productList = await FavouriteSingleton().productsMapToFavourite(productList);
-    offset += limit;
-  }
-
   @override
   Stream<ProductsPageState> mapEventToState(ProductsPageEvent event) async* {
     if (event is LoadProducts) {
@@ -39,27 +24,42 @@ class ProductsPageBloc extends Bloc<ProductsPageEvent, ProductsPageState> {
     }
   }
 
-  onFavouriteAdded(int productID){
-    productList.forEach((element) {
-      if(element.id == productID){
-        element.isFavourite = true;
-        return;
-      }
-    });
-    add(ReloadProducts());
-  }
+  _getProducts() async {
+    Response response;
+    Dio dio = new Dio();
+    response = await dio.get(
+        "http://mobile-test.devebs.net:5000/products?limit=$limit&offset=$offset");
 
-  onFavouriteRemoved(int productID){
-    productList.forEach((element) {
-      if(element.id == productID){
-        element.isFavourite = false;
-        return;
-      }
-    });
-    add(ReloadProducts());
+    for (var i in response.data) {
+      Product product = Product(i["id"], i["title"], i["short_description"],
+          i["image"], i["price"], i["details"], i["sale_precent"], false);
+      productList.add(product);
+    }
+//    productList = await FavouriteSingleton().productsMapToFavourite(productList);
+    offset += limit;
   }
 
   loadProducts() {
     add(LoadProducts());
+  }
+
+  onFavouriteAdded(int productID){
+//    productList.forEach((element) {
+//      if(element.id == productID){
+//        element.isFavourite = true;
+//        return;
+//      }
+//    });
+//    add(ReloadProducts());
+  }
+
+  onFavouriteRemoved(int productID){
+//    productList.forEach((element) {
+//      if(element.id == productID){
+//        element.isFavourite = false;
+//        return;
+//      }
+//    });
+//    add(ReloadProducts());
   }
 }

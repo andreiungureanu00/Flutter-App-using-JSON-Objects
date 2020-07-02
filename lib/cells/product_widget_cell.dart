@@ -15,6 +15,13 @@ class ProductWidgetCell extends StatefulWidget {
 }
 
 class ProductWidgetCellState extends State<ProductWidgetCell> {
+
+  int tapCounter;
+
+  ProductWidgetCellState(){
+    tapCounter = 0;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -132,8 +139,18 @@ class ProductWidgetCellState extends State<ProductWidgetCell> {
                   size: 24.0,
                   color: widget.product.isFavourite? Colors.red : Colors.black26,
                 ),
-                onTap: () {
-                  FavouriteSingleton().addToFavourite(widget.product.id);
+                onTap: () async {
+                  tapCounter++;
+                  if (tapCounter % 2 == 1) {
+                    FavouriteSingleton().addToFavourite(widget.product);
+                    debugPrint("Am adaugat la favourites");
+                  }
+                  else {
+                    FavouriteSingleton().removeFromFavourite(widget.product);
+                    debugPrint("Am sters de la favourites");
+                  }
+                  List<Product> list = await FavouriteSingleton().getProducts();
+                  print(list[0].title);
                 },
               )),
             ),

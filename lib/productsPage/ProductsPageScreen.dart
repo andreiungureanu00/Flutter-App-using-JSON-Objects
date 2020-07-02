@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jsonget/cells/product_widget_cell.dart';
 import 'package:jsonget/database/favorite_singleton.dart';
+import 'package:jsonget/favourites/favourites_screen.dart';
 import 'package:jsonget/productsPage/bloc/products_page_bloc.dart';
 import 'package:jsonget/productsPage/bloc/products_page_state.dart';
 
@@ -27,7 +28,7 @@ class _ProductsPageScreenState extends State<ProductsPageScreen> with FavouriteE
 
     // initial load
     _bloc.loadProducts();
-    FavouriteSingleton().initDb();
+//    FavouriteSingleton().initDb();
     FavouriteSingleton().addListener(this);
     super.initState();
 
@@ -55,13 +56,23 @@ class _ProductsPageScreenState extends State<ProductsPageScreen> with FavouriteE
       actions: [
         Row(
           children: [
-            Icon(
-              Icons.favorite,
-              color: Colors.red,
+            InkWell(
+              child: Icon(
+                Icons.favorite,
+                color: Colors.red,
+              ),
+              onTap: () {
+                {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) =>
+                        FavouritesPageScreen(),
+                  ));
+                }
+              },
             ),
             SizedBox(
               width: 5,
-            )
+            ),
           ],
         )
       ],),

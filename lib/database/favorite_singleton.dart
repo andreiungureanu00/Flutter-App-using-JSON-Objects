@@ -9,11 +9,53 @@ class FavouriteSingleton {
   static Database _database;
   Product product;
 
+  String table = 'product';
+  String columnId = 'id';
+  String columnTitle = 'title';
+  String columnDescription = 'short_description';
+
+  //String columnImage = 'imageUrl';
+  String columnPrice = 'price';
+  String columnDetails = 'details';
+  String columnSale = 'sale_precent';
+
   static final FavouriteSingleton _singleton =
       new FavouriteSingleton._internal();
 
   factory FavouriteSingleton() {
     return _singleton;
+  }
+
+  FavouriteSingleton._internal();
+
+  List<FavouriteEvents> _events = [];
+
+  //add on init screen
+  addListener(FavouriteEvents event) {
+    _events.add(event);
+  }
+
+  //remove on delete screen
+  removeListener(FavouriteEvents event) {
+    _events.remove(event);
+  }
+
+  addToFavourite(Product product) {
+    newProduct(product);
+
+    //send notification to all screens that listen events
+    _events.forEach((element) {
+      element.onFavouriteAdded(product.id);
+    });
+  }
+
+  removeFromFavourite(Product product) {
+    deleteProduct(product.id);
+
+    //send notification to all screens that listen events
+    _events.forEach((element) {
+      element.onFavouriteDeleted(product.id);
+    });
   }
 
   Future<Database> get database async {
@@ -22,46 +64,82 @@ class FavouriteSingleton {
     return _database;
   }
 
-  initDb() async {
+  Future<Database> initDb() async {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, "favourites.db");
-    var theDb = await openDatabase(path, version: 1, onCreate: _onCreate);
+    String path = join(documentsDirectory.path, "favourite.db");
+    var theDb = await openDatabase(path, version: 2, onCreate: _onCreate);
     return theDb;
   }
 
   Future<FutureOr<void>> _onCreate(Database db, int version) async {
     await db.execute(
-      "CREATE TABLE products(id INTEGER PRIMARY KEY, title TEXT, short_description TEXT "
-      "imageUrl TEXT, price INTEGER, details TEXT)",
+      'CREATE TABLE $table($columnId INTEGER PRIMARY KEY, $columnTitle TEXT, $columnDescription TEXT, imageUrl TEXT, $columnPrice INTEGER, $columnDetails TEXT, $columnSale INTEGER)',
     );
     print("Created tables");
   }
 
-  newProduct(Product product) async {
-    var db = await database;
-    var res = await db.insert("Product", product.toMap());
+  Future<int> newProduct(Product product) async {
+    Database db = await this.database;
+    var res = await db.insert('$table', product.toMap());
     return res;
   }
 
-  updateProduct(Product product) async {
-    final db = await database;
-    var res = await db.update("Client", product.toMap(),
+  Future<int> updateProduct(Product product) async {
+    final db = await this.database;
+    var res = await db.update('$table', product.toMap(),
         where: "id = ?", whereArgs: [product.id]);
     return res;
   }
 
-  Future<List<Product>> get_products() async {
+  Future<int> deleteProduct(int id) async {
+    var db = await this.database;
+    int result = await db.rawDelete('DELETE FROM $table where $columnId = $id');
+//    db.delete('products', where: "id = ?", whereArgs: [id]);
+    return result;
+  }
 
-    Map<String, dynamic> todoMapList = (await get_products()) as Map<String, dynamic>; // Get 'Map List' from database
-    int count = todoMapList.length;
+  Future<int> getCount() async {
+    Database db = await this.database;
+    List<Map<String, dynamic>> x =
+        await db.rawQuery('SELECT COUNT (*) from $table');
+    int result = Sqflite.firstIntValue(x);
+    return result;
+  }
 
-    List<Product> products_list = List<Product>();
+  Future<List<Map<String, dynamic>>> getProductsList() async {
+    Database db = await this.database;
+
+//    var result = await db.rawQuery('SELECT * FROM products');
+    var result = await db.query('$table');
+
+    return result;
+  }
+
+  Future<List<Product>> getProducts() async {
+    var productMapList =
+        await getProductsList();
+    int count = productMapList.length;
+
+    List<Product> productList = List<Product>();
     for (int i = 0; i < count; i++) {
-      products_list.add(Product.fromMapObject(todoMapList[i]));
+      productList.add(Product.fromMapObject(productMapList[i]));
     }
 
-    return products_list;
+    return productList;
   }
+
+//  Future<List<Product>> get_products() async {
+//
+//    Map<String, dynamic> todoMapList = (await get_products()) as Map<String, dynamic>; // Get 'Map List' from database
+//    int count = todoMapList.length;
+//
+//    List<Product> products_list = List<Product>();
+//    for (int i = 0; i < count; i++) {
+//      products_list.add(Product.fromMapObject(todoMapList[i]));
+//    }
+//
+//    return products_list;
+//  }
 
 //  Future<List<Product>> products() async {
 //    final Database db = await database;
@@ -79,67 +157,30 @@ class FavouriteSingleton {
 //  }
 
   Future<List<Product>> productsMapToFavourite(List<Product> products) async {
-    Map<String, dynamic> todoMapList = (await get_products()) as Map<String, dynamic>; // Get 'Map List' from database
-    int count = todoMapList.length;
+    Map<String, dynamic> productMapList = (await getProducts())
+        as Map<String, dynamic>; // Get 'Map List' from database
+    int count = productMapList.length;
 
     List<Product> products_list = List<Product>();
     for (int i = 0; i < count; i++) {
-      products_list.add(Product.fromMapObject(todoMapList[i]));
+      products_list.add(Product.fromMapObject(productMapList[i]));
     }
 
     //TODO verificam in products daca este un produs din products_list, si ii punem field isFavorite true sau false
     for (int i = 0; i < products.length; i++) {
-      if (products[i].id == products_list[i].id){
+      if (products[i].id == products_list[i].id) {
         products[i].isFavourite = true;
-      }
-      else {
+      } else {
         products[i].isFavourite = false;
       }
     }
 
     return products;
   }
-
-
-  deleteProduct(int id) async {
-    final db = await _database;
-    db.delete("Client", where: "id = ?", whereArgs: [id]);
-  }
-
-  FavouriteSingleton._internal();
-
-  List<FavouriteEvents> _events = [];
-
-  //add on init screen
-  addListener(FavouriteEvents event) {
-    _events.add(event);
-  }
-
-  //remove on delete screen
-  removeListener(FavouriteEvents event) {
-    _events.remove(event);
-  }
-
-  addToFavourite(int productId) {
-    newProduct(product);
-
-    //send notification to all screens that listen events
-    _events.forEach((element) {
-      element.onFavouriteAdded(productId);
-    });
-  }
-
-  removeFromFavourite(int productId) {
-    deleteProduct(productId);
-
-    //send notification to all screens that listen events
-    _events.forEach((element) {
-      element.onFavouriteDeleted(productId);
-    });
-  }
 }
 
 abstract class FavouriteEvents {
   void onFavouriteAdded(int productId);
+
   void onFavouriteDeleted(int productId);
 }
