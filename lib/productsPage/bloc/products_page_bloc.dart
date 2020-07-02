@@ -35,7 +35,7 @@ class ProductsPageBloc extends Bloc<ProductsPageEvent, ProductsPageState> {
           i["image"], i["price"], i["details"], i["sale_precent"], false);
       productList.add(product);
     }
-//    productList = await FavouriteSingleton().productsMapToFavourite(productList);
+    productList = await FavouriteSingleton().productsMapToFavourite(productList);
     offset += limit;
   }
 
@@ -44,22 +44,22 @@ class ProductsPageBloc extends Bloc<ProductsPageEvent, ProductsPageState> {
   }
 
   onFavouriteAdded(int productID){
-//    productList.forEach((element) {
-//      if(element.id == productID){
+    productList.forEach((element) {
+      if(element.id == productID){
 //        element.isFavourite = true;
-//        return;
-//      }
-//    });
-//    add(ReloadProducts());
+        return;
+      }
+    });
+    add(ReloadProducts());
   }
 
   onFavouriteRemoved(int productID){
-//    productList.forEach((element) {
-//      if(element.id == productID){
-//        element.isFavourite = false;
-//        return;
-//      }
-//    });
-//    add(ReloadProducts());
+    productList.forEach((element) {
+      if(element.id == productID){
+        element.isFavourite = false;
+        return;
+      }
+    });
+    add(ReloadProducts());
   }
 }

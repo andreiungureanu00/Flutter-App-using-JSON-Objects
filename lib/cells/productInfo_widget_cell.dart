@@ -13,6 +13,13 @@ class ProductInfoWidgetCell extends StatefulWidget {
 }
 
 class ProductInfoWidgetCellState extends State<ProductInfoWidgetCell> {
+
+  int tapCounter;
+
+  ProductInfoWidgetCellState(){
+    tapCounter=0;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -21,7 +28,6 @@ class ProductInfoWidgetCellState extends State<ProductInfoWidgetCell> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Expanded(
           child: Container(
         child: SingleChildScrollView(
           child: Column(
@@ -38,14 +44,22 @@ class ProductInfoWidgetCellState extends State<ProductInfoWidgetCell> {
                         child: Icon(
                           Icons.favorite,
                           size: 24.0,
-                          color: widget.product.isFavourite
+                          color: widget.product.isFavourite == true
                               ? Colors.red
                               : Colors.black26,
                         ),
-                        onTap: () {
-                          FavouriteSingleton()
-                              .addToFavourite(widget.product);
-                          print(FavouriteSingleton().getProductsList());
+                        onTap: ()  {
+                          tapCounter++;
+                          if (tapCounter % 2 == 1) {
+                            widget.product.isFavourite = true;
+                            FavouriteSingleton().addToFavourite(widget.product);
+                            debugPrint("Am adaugat la favourites");
+                          }
+                          else {
+                            widget.product.isFavourite = false;
+                            FavouriteSingleton().removeFromFavourite(widget.product);
+                            debugPrint("Am sters de la favourites");
+                          }
                         },
                       )),
                 ],
@@ -162,7 +176,7 @@ class ProductInfoWidgetCellState extends State<ProductInfoWidgetCell> {
             ],
           ),
         ),
-      )),
+      ),
     );
   }
 }

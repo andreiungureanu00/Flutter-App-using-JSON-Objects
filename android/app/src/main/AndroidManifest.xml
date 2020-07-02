@@ -8,8 +8,10 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="jsonget"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher">
         <activity
+            android:allowBackup="false"
             android:name=".MainActivity"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"

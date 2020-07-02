@@ -1,3 +1,4 @@
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:jsonget/database/favorite_singleton.dart';
@@ -137,20 +138,20 @@ class ProductWidgetCellState extends State<ProductWidgetCell> {
                 child: Icon(
                   Icons.favorite,
                   size: 24.0,
-                  color: widget.product.isFavourite? Colors.red : Colors.black26,
+                  color: widget.product.isFavourite ? Colors.red : Colors.black26,
                 ),
-                onTap: () async {
+                onTap: ()  {
                   tapCounter++;
                   if (tapCounter % 2 == 1) {
+                    widget.product.isFavourite = true;
                     FavouriteSingleton().addToFavourite(widget.product);
                     debugPrint("Am adaugat la favourites");
                   }
                   else {
+                    widget.product.isFavourite = false;
                     FavouriteSingleton().removeFromFavourite(widget.product);
                     debugPrint("Am sters de la favourites");
                   }
-                  List<Product> list = await FavouriteSingleton().getProducts();
-                  print(list[0].title);
                 },
               )),
             ),

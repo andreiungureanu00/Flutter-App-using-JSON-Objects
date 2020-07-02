@@ -4,3 +4,4 @@ abstract class ProductsPageState extends Object {
 
 class ProductsInit extends ProductsPageState {}
 class ProductsLoaded extends ProductsPageState {}
+class ProductsReloaded extends ProductsPageState {}

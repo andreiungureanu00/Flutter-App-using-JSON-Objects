@@ -100,6 +100,7 @@ class ProductInfoScreenState extends State<ProductInfoScreen> with FavouriteEven
 
   @override
   void onFavouriteDeleted(int productId) {
-    onFavouriteDeleted(productId);
+   _productBloc.onFavouriteRemoved(productId);
   }
+
 }

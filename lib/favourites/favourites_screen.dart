@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:jsonget/database/favorite_singleton.dart';
 import 'package:jsonget/models/Product.dart';
+import 'package:jsonget/productInfoPage/ProductInfoScreen.dart';
 
 
 class FavouritesPageScreen extends StatefulWidget {
@@ -17,18 +17,24 @@ class FavouritesPageScreen extends StatefulWidget {
 
 class _FavouritesPageScreenState extends State<FavouritesPageScreen> {
 
-  Future<List<Product>> getProducts() async {
-    var data = await http
-        .get("http://mobile-test.devebs.net:5000/products?limit=10&offset=0");
+  ScrollController controller;
 
-    var jsonData = json.decode(data.body);
+  @override
+  void initState() {
+    controller = new ScrollController();
+    super.initState();
+
+    controller.addListener(() {
+      if (controller.position.pixels == controller.position.maxScrollExtent) {
+        getProductsFromDb();
+      }
+    });
+  }
+
+  Future<List<Product>> getProductsFromDb() async {
 
     List<Product> products = [];
-    for (var i in jsonData) {
-      Product product = Product(
-          i["id"], i["title"], i["short_description"], i["image"], i["price"], i["details"], i["sale_precent"], false);
-      products.add(product);
-    }
+    products = await FavouriteSingleton().getProducts();
 
     return products;
   }
@@ -45,7 +51,7 @@ class _FavouritesPageScreenState extends State<FavouritesPageScreen> {
         child: Column(
           children: <Widget>[
             FutureBuilder(
-              future: getProducts(),
+              future: getProductsFromDb(),
               builder: (BuildContext context, AsyncSnapshot snapShot) {
                 if (snapShot.data == null) {
                   return Container(
@@ -69,6 +75,12 @@ class _FavouritesPageScreenState extends State<FavouritesPageScreen> {
                                     child: new Image.network(
                                         snapShot.data[index].imageUrl),
                                   ),
+                                  onTap: () {
+                                    Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          ProductInfoScreen(productId: snapShot.data[index].id),
+                                    ));
+                                  },
                                 ),
                                 InkWell(
                                   child: Container(
@@ -86,6 +98,12 @@ class _FavouritesPageScreenState extends State<FavouritesPageScreen> {
                                       ),
                                     ),
                                   ),
+                                  onTap: () {
+                                    Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          ProductInfoScreen(productId: snapShot.data[index].id),
+                                    ));
+                                  },
                                 ),
                                 Container(
                                   height: 35,
@@ -106,16 +124,43 @@ class _FavouritesPageScreenState extends State<FavouritesPageScreen> {
                                 Container(
                                   height: 35,
                                   width: 400,
-                                  margin: EdgeInsets.only(top: 10, bottom: 45),
+                                  margin: EdgeInsets.only(top: 10),
                                   child: Center(
-                                    child: Text(
-                                      snapShot.data[index].price.toString() +
-                                          '€',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          color: Color(0xff0101DF),
-                                          fontSize: 23,
-                                          fontFamily: 'RobotMono'),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          snapShot.data[index].sale_precent > 0
+                                              ? (snapShot.data[index].price *
+                                              (100 - snapShot.data[index].sale_precent) ~/
+                                              100)
+                                              .toString() +
+                                              '€'
+                                              : " ",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              color: Color(0xff0101DF),
+                                              fontSize: 23,
+                                              fontFamily: 'RobotMono'),
+                                        ),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        Text(
+                                          snapShot.data[index].price.toString() + '€',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              color: snapShot.data[index].sale_precent > 0
+                                                  ? Color(0xff7F7F7F)
+                                                  : Color(0xff0101DF),
+                                              decoration: snapShot.data[index].sale_precent > 0
+                                                  ? TextDecoration.lineThrough
+                                                  : TextDecoration.none,
+                                              fontSize: snapShot.data[index].sale_precent > 0 ? 18 : 23,
+                                              fontFamily: 'RobotMono'),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -128,14 +173,6 @@ class _FavouritesPageScreenState extends State<FavouritesPageScreen> {
                   );
                 }
               },
-            ),
-            RaisedButton(
-              child: Visibility(
-                child: Text("Next Page"),
-                maintainState: true,
-                visible: true,
-              ),
-              color: Colors.white,
             ),
           ],
         ),

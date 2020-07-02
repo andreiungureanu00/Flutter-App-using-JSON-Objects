@@ -13,8 +13,7 @@ class FavouriteSingleton {
   String columnId = 'id';
   String columnTitle = 'title';
   String columnDescription = 'short_description';
-
-  //String columnImage = 'imageUrl';
+  String columnImage = 'imageUrl';
   String columnPrice = 'price';
   String columnDetails = 'details';
   String columnSale = 'sale_precent';
@@ -42,7 +41,7 @@ class FavouriteSingleton {
 
   addToFavourite(Product product) {
     newProduct(product);
-
+//    product.isFavourite = true;
     //send notification to all screens that listen events
     _events.forEach((element) {
       element.onFavouriteAdded(product.id);
@@ -51,7 +50,7 @@ class FavouriteSingleton {
 
   removeFromFavourite(Product product) {
     deleteProduct(product.id);
-
+//    product.isFavourite = false;
     //send notification to all screens that listen events
     _events.forEach((element) {
       element.onFavouriteDeleted(product.id);
@@ -66,16 +65,15 @@ class FavouriteSingleton {
 
   Future<Database> initDb() async {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, "favourite.db");
-    var theDb = await openDatabase(path, version: 2, onCreate: _onCreate);
+    String path = join(documentsDirectory.path, "favouriteproducts.db");
+    var theDb = await openDatabase(path, version: 1, onCreate: _onCreate);
     return theDb;
   }
 
-  Future<FutureOr<void>> _onCreate(Database db, int version) async {
+  void _onCreate(Database db, int version) async {
     await db.execute(
-      'CREATE TABLE $table($columnId INTEGER PRIMARY KEY, $columnTitle TEXT, $columnDescription TEXT, imageUrl TEXT, $columnPrice INTEGER, $columnDetails TEXT, $columnSale INTEGER)',
+      'CREATE TABLE $table($columnId INTEGER PRIMARY KEY, $columnTitle TEXT, $columnDescription TEXT, $columnImage TEXT, $columnPrice INTEGER, $columnDetails TEXT, $columnSale INTEGER)',
     );
-    print("Created tables");
   }
 
   Future<int> newProduct(Product product) async {
@@ -94,7 +92,6 @@ class FavouriteSingleton {
   Future<int> deleteProduct(int id) async {
     var db = await this.database;
     int result = await db.rawDelete('DELETE FROM $table where $columnId = $id');
-//    db.delete('products', where: "id = ?", whereArgs: [id]);
     return result;
   }
 
@@ -108,16 +105,13 @@ class FavouriteSingleton {
 
   Future<List<Map<String, dynamic>>> getProductsList() async {
     Database db = await this.database;
-
-//    var result = await db.rawQuery('SELECT * FROM products');
     var result = await db.query('$table');
 
     return result;
   }
 
   Future<List<Product>> getProducts() async {
-    var productMapList =
-        await getProductsList();
+    var productMapList = await getProductsList();
     int count = productMapList.length;
 
     List<Product> productList = List<Product>();
@@ -128,54 +122,43 @@ class FavouriteSingleton {
     return productList;
   }
 
-//  Future<List<Product>> get_products() async {
-//
-//    Map<String, dynamic> todoMapList = (await get_products()) as Map<String, dynamic>; // Get 'Map List' from database
-//    int count = todoMapList.length;
-//
-//    List<Product> products_list = List<Product>();
-//    for (int i = 0; i < count; i++) {
-//      products_list.add(Product.fromMapObject(todoMapList[i]));
-//    }
-//
-//    return products_list;
-//  }
-
-//  Future<List<Product>> products() async {
-//    final Database db = await database;
-//    final List<Map<String, dynamic>> maps = await db.query('products');
-//
-//    return List.generate(maps.length, (i) {
-//      return Product(id: maps[i]['id'],
-//          'title': maps[i]['title'],
-//          short_description: maps[i]['short_description'],
-//          imageUrl: maps[i]['imageUrl'],
-//          price: maps[i]['price'],
-//          details: maps[i]['details']
-//      );
-//    });
-//  }
-
   Future<List<Product>> productsMapToFavourite(List<Product> products) async {
-    Map<String, dynamic> productMapList = (await getProducts())
-        as Map<String, dynamic>; // Get 'Map List' from database
+    var productMapList = await getProductsList();
     int count = productMapList.length;
 
-    List<Product> products_list = List<Product>();
+    List<Product> productList = List<Product>();
     for (int i = 0; i < count; i++) {
-      products_list.add(Product.fromMapObject(productMapList[i]));
+      productList.add(Product.fromMapObject(productMapList[i]));
     }
 
     //TODO verificam in products daca este un produs din products_list, si ii punem field isFavorite true sau false
     for (int i = 0; i < products.length; i++) {
-      if (products[i].id == products_list[i].id) {
+      if (products[i].id == productList[i].id) {
         products[i].isFavourite = true;
-      } else {
-        products[i].isFavourite = false;
       }
     }
 
     return products;
+  }
+
+  Future<void> productMapToFavourite(Product product) async {
+    var productMapList = await getProductsList();
+    int count = productMapList.length;
+
+    List<Product> productList = List<Product>();
+    for (int i = 0; i < count; i++) {
+      productList.add(Product.fromMapObject(productMapList[i]));
+    }
+
+    for (int i = 0; i < count; i++) {
+      if (product.id == productList[i].id){
+        product.isFavourite = true;
+        break;
+      }
+      else {
+        product.isFavourite = false;
+      }
+    }
   }
 }
 
