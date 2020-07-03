@@ -1,9 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jsonget/cells/favorite_product_widget_cell.dart';
+import 'package:jsonget/cells/productInfo_widget_cell.dart';
 import 'dart:async';
 import 'package:jsonget/database/favorite_singleton.dart';
+import 'package:jsonget/favourites/bloc/favourites_bloc.dart';
+import 'package:jsonget/favourites/bloc/favourites_state.dart';
 import 'package:jsonget/models/Product.dart';
 import 'package:jsonget/productInfoPage/ProductInfoScreen.dart';
+import 'package:jsonget/productsPage/bloc/products_page_bloc.dart';
+import 'package:jsonget/productsPage/bloc/products_page_state.dart';
 
 
 class FavouritesPageScreen extends StatefulWidget {
@@ -15,29 +22,28 @@ class FavouritesPageScreen extends StatefulWidget {
   _FavouritesPageScreenState createState() => _FavouritesPageScreenState();
 }
 
-class _FavouritesPageScreenState extends State<FavouritesPageScreen> {
+class _FavouritesPageScreenState extends State<FavouritesPageScreen> with FavouriteEvents {
 
   ScrollController controller;
+  List<Product> products;
+  FavouritesBloc _favouritesBloc;
 
   @override
   void initState() {
     controller = new ScrollController();
+    _favouritesBloc = FavouritesBloc();
+    _favouritesBloc.loadFavouriteProducts();
     super.initState();
 
-    controller.addListener(() {
-      if (controller.position.pixels == controller.position.maxScrollExtent) {
-        getProductsFromDb();
-      }
-    });
   }
 
-  Future<List<Product>> getProductsFromDb() async {
-
-    List<Product> products = [];
-    products = await FavouriteSingleton().getProducts();
-
-    return products;
-  }
+//  Future<List<Product>> getProductsFromDb() async {
+//
+//    List<Product> products = [];
+//    products = await FavouriteSingleton().getProducts();
+//
+//    return products;
+//  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,133 +56,58 @@ class _FavouritesPageScreenState extends State<FavouritesPageScreen> {
       body: Center(
         child: Column(
           children: <Widget>[
-            FutureBuilder(
-              future: getProductsFromDb(),
-              builder: (BuildContext context, AsyncSnapshot snapShot) {
-                if (snapShot.data == null) {
-                  return Container(
-                    child: Center(child: Text("Loading...")),
-                  );
-                } else {
-                  return Expanded(
-                    child: SizedBox(
-                      height: 200.0,
-                      child: new ListView.builder(
-                        itemCount: snapShot.data.length,
+//            FutureBuilder(
+//              future: getProductsFromDb(),
+//              builder: (BuildContext context, AsyncSnapshot snapShot) {
+//                if (snapShot.data == null) {
+//                  return Container(
+//                    child: Center(child: Text("Loading...")),
+//                  );
+//                } else {
+//                  return Expanded(
+//                    child: SizedBox(
+//                      height: 200.0,
+//                      child: new ListView.builder(
+//                        itemCount: snapShot.data.length,
+//                        itemBuilder: (BuildContext context, int index) {
+//                          return FavoriteProductInfoWidgetCell(snapShot.data[index]);
+//                        },
+//                      ),
+//                    ),
+//                  );
+//                }
+//              },
+//            ),
+            BlocBuilder<FavouritesBloc, FavouritesState>(
+                bloc: _favouritesBloc,
+                builder: (context, state) {
+                  if (_favouritesBloc.productList != null) {
+                    return Expanded(
+                      child: ListView.builder(
+                        controller: controller,
+                        itemCount: _favouritesBloc.productList.length,
                         itemBuilder: (BuildContext context, int index) {
-                          return Container(
-                            child: Column(
-                              children: <Widget>[
-                                InkWell(
-                                  child: Container(
-                                    margin: EdgeInsets.only(top: 20),
-                                    height: 250,
-                                    width: 330,
-                                    child: new Image.network(
-                                        snapShot.data[index].imageUrl),
-                                  ),
-                                  onTap: () {
-                                    Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) =>
-                                          ProductInfoScreen(productId: snapShot.data[index].id),
-                                    ));
-                                  },
-                                ),
-                                InkWell(
-                                  child: Container(
-                                    height: 50,
-                                    width: 400,
-                                    margin: EdgeInsets.only(top: 24),
-                                    child: Center(
-                                      child: new Text(
-                                        snapShot.data[index].title,
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Color(0xff000066),
-                                            fontSize: 22),
-                                      ),
-                                    ),
-                                  ),
-                                  onTap: () {
-                                    Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) =>
-                                          ProductInfoScreen(productId: snapShot.data[index].id),
-                                    ));
-                                  },
-                                ),
-                                Container(
-                                  height: 35,
-                                  width: 400,
-                                  margin: EdgeInsets.only(top: 10),
-                                  child: Center(
-                                    child: Text(
-                                      snapShot.data[index].short_description,
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 12,
-                                        fontFamily: 'RobotMono',
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  height: 35,
-                                  width: 400,
-                                  margin: EdgeInsets.only(top: 10),
-                                  child: Center(
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          snapShot.data[index].sale_precent > 0
-                                              ? (snapShot.data[index].price *
-                                              (100 - snapShot.data[index].sale_precent) ~/
-                                              100)
-                                              .toString() +
-                                              '€'
-                                              : " ",
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              color: Color(0xff0101DF),
-                                              fontSize: 23,
-                                              fontFamily: 'RobotMono'),
-                                        ),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        Text(
-                                          snapShot.data[index].price.toString() + '€',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              color: snapShot.data[index].sale_precent > 0
-                                                  ? Color(0xff7F7F7F)
-                                                  : Color(0xff0101DF),
-                                              decoration: snapShot.data[index].sale_precent > 0
-                                                  ? TextDecoration.lineThrough
-                                                  : TextDecoration.none,
-                                              fontSize: snapShot.data[index].sale_precent > 0 ? 18 : 23,
-                                              fontFamily: 'RobotMono'),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
+                          return FavoriteProductWidgetCell(_favouritesBloc.productList[index]);
                         },
                       ),
-                    ),
-                  );
-                }
-              },
-            ),
+                    );
+                  } else {
+                    return CircularProgressIndicator();
+                  }
+                })
           ],
         ),
       ),
     );
+  }
+
+  @override
+  void onFavouriteAdded(int productId) {
+   _favouritesBloc.onFavouriteAdded(productId);
+  }
+
+  @override
+  void onFavouriteDeleted(int productId) {
+    _favouritesBloc.onFavouriteRemoved(productId);
   }
 }

@@ -145,12 +145,10 @@ class ProductWidgetCellState extends State<ProductWidgetCell> {
                   if (tapCounter % 2 == 1 && !widget.product.isFavourite) {
                     widget.product.isFavourite = true;
                     FavouriteSingleton().addToFavourite(widget.product);
-                    debugPrint("Am adaugat la favourites");
                   }
                   else {
                     widget.product.isFavourite = false;
                     FavouriteSingleton().removeFromFavourite(widget.product);
-                    debugPrint("Am sters de la favourites");
                   }
                 },
               )),

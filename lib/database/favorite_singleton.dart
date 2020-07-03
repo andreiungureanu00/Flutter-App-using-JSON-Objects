@@ -70,7 +70,8 @@ class FavouriteSingleton {
 
   void _onCreate(Database db, int version) async {
     await db.execute(
-      'CREATE TABLE $table($columnId INTEGER PRIMARY KEY, $columnTitle TEXT, $columnDescription TEXT, $columnImage TEXT, $columnPrice INTEGER, $columnDetails TEXT, $columnSale INTEGER)',
+      'CREATE TABLE $table($columnId INTEGER PRIMARY KEY, $columnTitle TEXT, $columnDescription TEXT,'
+          ' $columnImage TEXT, $columnPrice INTEGER, $columnDetails TEXT, $columnSale INTEGER)',
     );
   }
 
@@ -130,7 +131,7 @@ class FavouriteSingleton {
     }
 
     //TODO verificam in products daca este un produs din products_list, si ii punem field isFavorite true sau false
-    for (int i = 0; i < products.length; i++) {
+    for (int i = 0; i < count; i++) {
       if (products[i].id == productList[i].id) {
         products[i].isFavourite = true;
       }

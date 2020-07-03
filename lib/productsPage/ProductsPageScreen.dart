@@ -28,7 +28,6 @@ class _ProductsPageScreenState extends State<ProductsPageScreen>
 
     // initial load
     _bloc.loadProducts();
-//    FavouriteSingleton().initDb();
     FavouriteSingleton().addListener(this);
     super.initState();
 
@@ -103,10 +102,12 @@ class _ProductsPageScreenState extends State<ProductsPageScreen>
   @override
   void onFavouriteAdded(int productId) {
     _bloc.onFavouriteAdded(productId);
+    _bloc.reloadProducts();
   }
 
   @override
   void onFavouriteDeleted(int productId) {
     _bloc.onFavouriteRemoved(productId);
+    _bloc.reloadProducts();
   }
 }
