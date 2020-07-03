@@ -1,8 +1,7 @@
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jsonget/database/favorite_singleton.dart';
 import 'package:jsonget/models/Product.dart';
-import 'package:jsonget/productsPage/bloc/products_page_event.dart';
 import 'favourites_event.dart';
 import 'favourites_state.dart';
 
@@ -14,7 +13,6 @@ class FavouritesBloc extends Bloc<FavouritesEvent, FavouritesState> {
   FavouritesState get initialState => FavouriteProductsInit();
 
   Future<List<Product>> getProductsFromDb() async {
-
     productList = [];
     productList = await FavouriteSingleton().getProducts();
 
@@ -26,34 +24,49 @@ class FavouritesBloc extends Bloc<FavouritesEvent, FavouritesState> {
     if (event is LoadFavouriteProducts) {
       getProductsFromDb();
       // gives the state of loaded products
+      debugPrint("FavoritesRemove mapEventToState LoadFavouriteProducts ");
+
       yield FavouriteProductsLoaded();
     }
-    if(event is ReloadFavouriteProducts){
+    if (event is ReloadFavouriteProducts) {
+      debugPrint("FavoritesRemove mapEventToState ReloadFavouriteProducts ");
+
       yield FavouriteProductsReloaded();
     }
   }
 
   loadFavouriteProducts() {
+    debugPrint("FavoritesRemove bloc loadFavouriteProducts ");
+
+    add(ReloadFavouriteProducts());
     add(LoadFavouriteProducts());
   }
 
-  onFavouriteAdded(int productID){
-    productList.forEach((element) {
-      if(element.id == productID){
-        element.isFavourite = true;
-        return;
-      }
-    });
+  reloadFavoriteProducts() {
     add(ReloadFavouriteProducts());
   }
 
-  onFavouriteRemoved(int productID){
+  onFavouriteAdded(int productID) {
+    var product = productList.firstWhere((element) => element.id == productID);
+    product.isFavourite = true;
+   /* productList.forEach((element) {
+      if (element.id == productID) {
+        element.isFavourite = true;
+        return;
+      }
+    });*/
+    add(ReloadFavouriteProducts());
+  }
+
+  onFavouriteRemoved(int productID) {
+    debugPrint("FavoritesRemove bloc onFavouriteRemoved ");
+
     productList.forEach((element) {
-      if(element.id == productID){
+      if (element.id == productID) {
         element.isFavourite = false;
         return;
       }
     });
-    add(ReloadFavouriteProducts());
+    add(LoadFavouriteProducts());
   }
 }

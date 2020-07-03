@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:jsonget/database/favorite_singleton.dart';
 import 'package:jsonget/models/Product.dart';
 import 'package:jsonget/productInfoPage/ProductInfoScreen.dart';
 

@@ -48,7 +48,9 @@ class ProductInfoBloc extends Bloc<ProductInfoEvent, ProductInfoState> {
 
 
   loadProduct() {
+    add(ReloadProduct());
     add(LoadProduct());
+    add(ReloadProduct());
   }
 
   onFavouriteAdded(int productID) {
