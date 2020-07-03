@@ -43,16 +43,16 @@ class ProductInfoWidgetCellState extends State<ProductInfoWidgetCell> {
                           ? Colors.red
                           : Colors.black26,
                     ),
-                    onTap: ()  {
+                    onTap: () {
                       tapCounter++;
-                      if (tapCounter % 2 == 1 && !widget.product.isFavourite) {
+                      if (tapCounter % 2 == 1) {
                         widget.product.isFavourite = true;
                         FavouriteSingleton().addToFavourite(widget.product);
                         debugPrint("Am adaugat la favourites");
-                      }
-                      else {
+                      } else {
                         widget.product.isFavourite = false;
-                        FavouriteSingleton().removeFromFavourite(widget.product);
+                        FavouriteSingleton()
+                            .removeFromFavourite(widget.product);
                         debugPrint("Am sters de la favourites");
                       }
                     },

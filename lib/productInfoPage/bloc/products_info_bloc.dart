@@ -15,6 +15,17 @@ class ProductInfoBloc extends Bloc<ProductInfoEvent, ProductInfoState> {
   @override
   ProductInfoState get initialState => ProductInit();
 
+  @override
+  Stream<ProductInfoState> mapEventToState(ProductInfoEvent event) async* {
+    if (event is LoadProduct) {
+      await getProduct(productId);
+      yield ProductLoaded();
+    }
+    if (event is ReloadProduct) {
+      yield ProductLoaded();
+    }
+  }
+
   Future<void> getProduct(int productId) async {
     Response response;
     Dio dio = new Dio();
@@ -35,21 +46,14 @@ class ProductInfoBloc extends Bloc<ProductInfoEvent, ProductInfoState> {
 
   }
 
-  @override
-  Stream<ProductInfoState> mapEventToState(ProductInfoEvent event) async* {
-    if (event is LoadProduct) {
-      await getProduct(productId);
-      yield ProductLoaded();
-    }
-    if (event is ReloadProduct) {
-      yield ProductLoaded();
-    }
+
+  loadProduct() {
+    add(LoadProduct());
   }
 
   onFavouriteAdded(int productID) {
     if (product.id == productID) {
       product.isFavourite = true;
-      return;
     }
     add(ReloadProduct());
   }
@@ -57,12 +61,7 @@ class ProductInfoBloc extends Bloc<ProductInfoEvent, ProductInfoState> {
   onFavouriteRemoved(int productID) {
     if (product.id == productID) {
       product.isFavourite = false;
-      return;
     }
     add(ReloadProduct());
-  }
-
-  loadProduct() {
-    add(LoadProduct());
   }
 }

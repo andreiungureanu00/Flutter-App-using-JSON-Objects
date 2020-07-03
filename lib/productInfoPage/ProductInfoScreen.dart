@@ -18,7 +18,8 @@ class ProductInfoScreen extends StatefulWidget {
   ProductInfoScreenState createState() => ProductInfoScreenState(productId);
 }
 
-class ProductInfoScreenState extends State<ProductInfoScreen> with FavouriteEvents{
+class ProductInfoScreenState extends State<ProductInfoScreen>
+    with FavouriteEvents {
   Product product;
   int productId;
   ProductInfoBloc _productBloc;
@@ -49,47 +50,20 @@ class ProductInfoScreenState extends State<ProductInfoScreen> with FavouriteEven
         child: Text("Online Shop"),
       )),
       body: Center(
-          child:
-//            FutureBuilder(
-//              future: getProduct(),
-//              // in snapShot will be available the result of getProducts
-//              builder: (BuildContext context, AsyncSnapshot snapShot) {
-//                if (snapShot.data == null) {
-//                  return Container(
-//                    child: Center(
-//                        child: new Text(
-//                          "Loading ...",
-//                          textAlign: TextAlign.center,
-//                        )
-//                    ),
-//                  );
-//                } else {
-//                  return Material(
-//                    color: Colors.white,
-//                      child: SingleChildScrollView(
-//                        child: ConstrainedBox(
-//                          constraints: BoxConstraints(),
-//                          child: ProductInfoWidgetCell(product)
-//                        ),
-//                      ),
-//                    );
-//                }
-//              },
-//            ),
-              BlocBuilder<ProductInfoBloc, ProductInfoState>(
-                  bloc: _productBloc,
-                  builder: (context, state) {
-                    if (_productBloc.product != null) {
-                      return Material(
-                        color: Colors.white,
-                        child: Container(
+          child: BlocBuilder<ProductInfoBloc, ProductInfoState>(
+              bloc: _productBloc,
+              builder: (context, state) {
+                if (_productBloc.product != null) {
+                  return Material(
+                      color: Colors.white,
+                      child: Container(
                         child: SingleChildScrollView(
                             child: ProductInfoWidgetCell(_productBloc.product)),
                       ));
-                    } else {
-                      return Container();
-                    }
-                  })),
+                } else {
+                  return Container();
+                }
+              })),
     );
   }
 
@@ -100,7 +74,6 @@ class ProductInfoScreenState extends State<ProductInfoScreen> with FavouriteEven
 
   @override
   void onFavouriteDeleted(int productId) {
-   _productBloc.onFavouriteRemoved(productId);
+    _productBloc.onFavouriteRemoved(productId);
   }
-
 }

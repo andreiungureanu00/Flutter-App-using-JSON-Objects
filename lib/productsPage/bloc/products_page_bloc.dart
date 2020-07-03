@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jsonget/database/favorite_singleton.dart';
 import 'package:jsonget/models/Product.dart';
+import 'package:http/http.dart' as http;
 import 'package:jsonget/productsPage/bloc/products_page_event.dart';
 import 'package:jsonget/productsPage/bloc/products_page_state.dart';
 
@@ -11,6 +14,23 @@ class ProductsPageBloc extends Bloc<ProductsPageEvent, ProductsPageState> {
 
   @override
   ProductsPageState get initialState => ProductsInit();
+
+  _getProducts() async {
+    Response response;
+    Dio dio = new Dio();
+    response = await dio.get(
+        "http://mobile-test.devebs.net:5000/products?limit=$limit&offset=$offset");
+
+    for (var i in response.data) {
+      Product product = Product(i["id"], i["title"], i["short_description"],
+          i["image"], i["price"], i["details"], i["sale_precent"], false);
+      productList.add(product);
+    }
+    productList =
+    await FavouriteSingleton().productsMapToFavourite(productList);
+
+    offset += limit;
+  }
 
   @override
   Stream<ProductsPageState> mapEventToState(ProductsPageEvent event) async* {
@@ -24,21 +44,6 @@ class ProductsPageBloc extends Bloc<ProductsPageEvent, ProductsPageState> {
     }
   }
 
-  _getProducts() async {
-    Response response;
-    Dio dio = new Dio();
-    response = await dio.get(
-        "http://mobile-test.devebs.net:5000/products?limit=$limit&offset=$offset");
-
-    for (var i in response.data) {
-      Product product = Product(i["id"], i["title"], i["short_description"],
-          i["image"], i["price"], i["details"], i["sale_precent"], false);
-      productList.add(product);
-    }
-    productList = await FavouriteSingleton().productsMapToFavourite(productList);
-    offset += limit;
-  }
-
   loadProducts() {
     add(LoadProducts());
   }
@@ -46,7 +51,7 @@ class ProductsPageBloc extends Bloc<ProductsPageEvent, ProductsPageState> {
   onFavouriteAdded(int productID){
     productList.forEach((element) {
       if(element.id == productID){
-//        element.isFavourite = true;
+        element.isFavourite = true;
         return;
       }
     });

@@ -142,7 +142,7 @@ class ProductWidgetCellState extends State<ProductWidgetCell> {
                 ),
                 onTap: ()  {
                   tapCounter++;
-                  if (tapCounter % 2 == 1) {
+                  if (tapCounter % 2 == 1 && !widget.product.isFavourite) {
                     widget.product.isFavourite = true;
                     FavouriteSingleton().addToFavourite(widget.product);
                     debugPrint("Am adaugat la favourites");

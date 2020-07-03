@@ -16,8 +16,8 @@ class ProductsPageScreen extends StatefulWidget {
   _ProductsPageScreenState createState() => _ProductsPageScreenState();
 }
 
-class _ProductsPageScreenState extends State<ProductsPageScreen> with FavouriteEvents{
-
+class _ProductsPageScreenState extends State<ProductsPageScreen>
+    with FavouriteEvents {
   ScrollController controller;
   ProductsPageBloc _bloc;
 
@@ -50,55 +50,53 @@ class _ProductsPageScreenState extends State<ProductsPageScreen> with FavouriteE
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-          title: Center(
-        child: Text("Online Shop"),
-      ),
-      actions: [
-        Row(
-          children: [
-            InkWell(
-              child: Icon(
-                Icons.favorite,
-                color: Colors.red,
-              ),
-              onTap: () {
-                {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) =>
-                        FavouritesPageScreen(),
-                  ));
-                }
-              },
-            ),
-            SizedBox(
-              width: 5,
-            ),
-          ],
-        )
-      ],),
-      body: Column(
-          children: <Widget>[
-            BlocBuilder<ProductsPageBloc, ProductsPageState>(
-                bloc: _bloc,
-                builder: (context, state) {
-                  if (_bloc.productList != null) {
-                    return Expanded(
-                      child: ListView.builder(
-                        controller: controller,
-                        itemCount: _bloc.productList.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return ProductWidgetCell(_bloc.productList[index]);
-                        },
-                      ),
-                    );
-                  }
-                  else {
-                    return CircularProgressIndicator(
-                    );
-                  }
-                }),
-          ],
+        title: Center(
+          child: Text("Online Shop"),
         ),
+        actions: [
+          Row(
+            children: [
+              InkWell(
+                child: Icon(
+                  Icons.favorite,
+                  color: Colors.red,
+                ),
+                onTap: () {
+                  {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => FavouritesPageScreen(),
+                    ));
+                  }
+                },
+              ),
+              SizedBox(
+                width: 5,
+              ),
+            ],
+          )
+        ],
+      ),
+      body: Column(
+        children: <Widget>[
+          BlocBuilder<ProductsPageBloc, ProductsPageState>(
+              bloc: _bloc,
+              builder: (context, state) {
+                if (_bloc.productList != null) {
+                  return Expanded(
+                    child: ListView.builder(
+                      controller: controller,
+                      itemCount: _bloc.productList.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return ProductWidgetCell(_bloc.productList[index]);
+                      },
+                    ),
+                  );
+                } else {
+                  return CircularProgressIndicator();
+                }
+              }),
+        ],
+      ),
     );
   }
 

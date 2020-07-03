@@ -41,7 +41,6 @@ class FavouriteSingleton {
 
   addToFavourite(Product product) {
     newProduct(product);
-//    product.isFavourite = true;
     //send notification to all screens that listen events
     _events.forEach((element) {
       element.onFavouriteAdded(product.id);
@@ -50,7 +49,6 @@ class FavouriteSingleton {
 
   removeFromFavourite(Product product) {
     deleteProduct(product.id);
-//    product.isFavourite = false;
     //send notification to all screens that listen events
     _events.forEach((element) {
       element.onFavouriteDeleted(product.id);
