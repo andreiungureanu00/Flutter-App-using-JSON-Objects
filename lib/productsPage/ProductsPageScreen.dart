@@ -1,5 +1,7 @@
 // ignore: avoid_web_libraries_in_flutter
 
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +13,7 @@ import 'package:jsonget/favourites/favourites_screen.dart';
 import 'package:jsonget/productsPage/bloc/products_page_bloc.dart';
 import 'package:jsonget/productsPage/bloc/products_page_state.dart';
 import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
+import 'package:http/http.dart' as http;
 
 class ProductsPageScreen extends StatefulWidget {
   ProductsPageScreen({Key key, this.title}) : super(key: key);
@@ -29,6 +32,7 @@ class _ProductsPageScreenState extends State<ProductsPageScreen>
   bool isLogged = false;
 
   void _logInWithFacebook() async {
+
     var facebookLogin = new FacebookLogin();
     var result = await facebookLogin.logIn(['email']);
     final FacebookAccessToken accessToken = result.accessToken;
@@ -40,6 +44,11 @@ class _ProductsPageScreenState extends State<ProductsPageScreen>
     if (result.status == FacebookLoginStatus.loggedIn) {
       FirebaseUser user = (await auth.signInWithCredential(credential)).user;
       print("succesLog");
+      final graphResponse = await http.get(
+          'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=${accessToken.token}');
+      final profile = json.decode(graphResponse.body);
+
+      debugPrint(profile.toString());
     }
     else if (result.status == FacebookLoginStatus.cancelledByUser) {
       print("CancelledByUser");
