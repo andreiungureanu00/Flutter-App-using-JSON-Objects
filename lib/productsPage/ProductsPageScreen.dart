@@ -1,11 +1,16 @@
+// ignore: avoid_web_libraries_in_flutter
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:jsonget/cells/product_widget_cell.dart';
 import 'package:jsonget/database/favorite_singleton.dart';
 import 'package:jsonget/favourites/favourites_screen.dart';
 import 'package:jsonget/productsPage/bloc/products_page_bloc.dart';
 import 'package:jsonget/productsPage/bloc/products_page_state.dart';
+import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
 
 class ProductsPageScreen extends StatefulWidget {
   ProductsPageScreen({Key key, this.title}) : super(key: key);
@@ -20,6 +25,31 @@ class _ProductsPageScreenState extends State<ProductsPageScreen>
     with FavouriteEvents {
   ScrollController controller;
   ProductsPageBloc _bloc;
+  FirebaseAuth auth = FirebaseAuth.instance;
+  bool isLogged = false;
+
+  void _logInWithFacebook() async {
+    var facebookLogin = new FacebookLogin();
+    var result = await facebookLogin.logIn(['email']);
+    final FacebookAccessToken accessToken = result.accessToken;
+    AuthCredential credential =
+        FacebookAuthProvider.getCredential(accessToken: accessToken.token);
+
+    debugPrint(result.status.toString());
+
+    if (result.status == FacebookLoginStatus.loggedIn) {
+      FirebaseUser user = (await auth.signInWithCredential(credential)).user;
+      print("succesLog");
+    }
+    else if (result.status == FacebookLoginStatus.cancelledByUser) {
+      print("CancelledByUser");
+    }
+    else if (result.status == FacebookLoginStatus.error) {
+      print("Error");
+    }
+
+    return null;
+  }
 
   @override
   void initState() {
@@ -94,6 +124,7 @@ class _ProductsPageScreenState extends State<ProductsPageScreen>
                   return CircularProgressIndicator();
                 }
               }),
+          FacebookSignInButton(onPressed: _logInWithFacebook)
         ],
       ),
     );
@@ -102,12 +133,10 @@ class _ProductsPageScreenState extends State<ProductsPageScreen>
   @override
   void onFavouriteAdded(int productId) {
     _bloc.onFavouriteAdded(productId);
-    _bloc.reloadProducts();
   }
 
   @override
   void onFavouriteDeleted(int productId) {
     _bloc.onFavouriteRemoved(productId);
-    _bloc.reloadProducts();
   }
 }

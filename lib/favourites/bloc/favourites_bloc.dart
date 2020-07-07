@@ -12,38 +12,26 @@ class FavouritesBloc extends Bloc<FavouritesEvent, FavouritesState> {
   @override
   FavouritesState get initialState => FavouriteProductsInit();
 
-  Future<List<Product>> getProductsFromDb() async {
-    productList = [];
-    productList = await FavouriteSingleton().getProducts();
-
-    return productList;
-  }
-
   @override
   Stream<FavouritesState> mapEventToState(FavouritesEvent event) async* {
     if (event is LoadFavouriteProducts) {
       getProductsFromDb();
-      // gives the state of loaded products
-      debugPrint("FavoritesRemove mapEventToState LoadFavouriteProducts ");
-
       yield FavouriteProductsLoaded();
     }
     if (event is ReloadFavouriteProducts) {
-      debugPrint("FavoritesRemove mapEventToState ReloadFavouriteProducts ");
-
+      getProductsFromDb();
       yield FavouriteProductsReloaded();
     }
   }
 
-  loadFavouriteProducts() {
-    debugPrint("FavoritesRemove bloc loadFavouriteProducts ");
+  getProductsFromDb() async {
+    productList = [];
+    productList = await FavouriteSingleton().getProducts();
 
-    add(ReloadFavouriteProducts());
-    add(LoadFavouriteProducts());
   }
 
-  reloadFavoriteProducts() {
-    add(ReloadFavouriteProducts());
+  loadFavouriteProducts() {
+    add(LoadFavouriteProducts());
   }
 
   onFavouriteAdded(int productID) {

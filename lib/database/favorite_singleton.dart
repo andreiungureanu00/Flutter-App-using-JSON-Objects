@@ -8,6 +8,7 @@ import 'package:sqflite/sqflite.dart';
 class FavouriteSingleton {
   static Database _database;
   Product product;
+  List<Product> productList;
 
   String table = 'product';
   String columnId = 'id';
@@ -49,6 +50,7 @@ class FavouriteSingleton {
 
   removeFromFavourite(Product product) {
     deleteProduct(product.id);
+
     //send notification to all screens that listen events
     _events.forEach((element) {
       element.onFavouriteDeleted(product.id);
@@ -125,7 +127,8 @@ class FavouriteSingleton {
     var productMapList = await getProductsList();
     int count = productMapList.length;
 
-    List<Product> productList = List<Product>();
+    productList = List<Product>();
+    productList = [];
     for (int i = 0; i < count; i++) {
       productList.add(Product.fromMapObject(productMapList[i]));
     }

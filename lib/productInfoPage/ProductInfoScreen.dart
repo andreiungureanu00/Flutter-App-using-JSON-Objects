@@ -54,14 +54,10 @@ class ProductInfoScreenState extends State<ProductInfoScreen>
               bloc: _productBloc,
               builder: (context, state) {
                 if (_productBloc.product != null) {
-                  return Material(
-                      color: Colors.white,
-                      child: Container(
-                        child: SingleChildScrollView(
-                            child: ProductInfoWidgetCell(_productBloc.product)),
-                      ));
+                  return
+                      ProductInfoWidgetCell(_productBloc.product);
                 } else {
-                  return Container();
+                  return CircularProgressIndicator();
                 }
               })),
     );

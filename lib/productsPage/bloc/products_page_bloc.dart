@@ -23,8 +23,8 @@ class ProductsPageBloc extends Bloc<ProductsPageEvent, ProductsPageState> {
           i["image"], i["price"], i["details"], i["sale_precent"], false);
       productList.add(product);
     }
-    productList = await FavouriteSingleton().productsMapToFavourite(productList);
     offset += limit;
+    productList = await FavouriteSingleton().productsMapToFavourite(productList);
   }
 
   @override
@@ -42,10 +42,6 @@ class ProductsPageBloc extends Bloc<ProductsPageEvent, ProductsPageState> {
   loadProducts() {
     add(ReloadProducts());
     add(LoadProducts());
-  }
-
-  reloadProducts() {
-    add(ReloadProducts());
   }
 
   onFavouriteAdded(int productID){
