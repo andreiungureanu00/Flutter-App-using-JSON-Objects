@@ -134,9 +134,11 @@ class FavouriteSingleton {
     }
 
     //TODO verificam in products daca este un produs din products_list, si ii punem field isFavorite true sau false
-    for (int i = 0; i < count; i++) {
-      if (products[i].id == productList[i].id) {
-        products[i].isFavourite = true;
+    for (int i = 0; i < products.length; i++) {
+      for (int j = 0; j < productList.length; j++) {
+        if (products[i].id == productList[j].id) {
+          products[i].isFavourite = true;
+        }
       }
     }
 
