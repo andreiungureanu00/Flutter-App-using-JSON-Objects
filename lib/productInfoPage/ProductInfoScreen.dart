@@ -72,4 +72,8 @@ class ProductInfoScreenState extends State<ProductInfoScreen>
   void onFavouriteDeleted(int productId) {
     _productBloc.onFavouriteRemoved(productId);
   }
+
+  @override
+  void loadDataFromFB() {
+  }
 }

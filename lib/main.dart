@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:jsonget/productsPage/ProductsPageScreen.dart';
 
+import 'homepage.dart';
+
 void main() {
   runApp(new MyApp());
 }
@@ -17,7 +19,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: ProductsPageScreen(title: 'Flutter Demo Home Page'),
+      home: HomePage(),
     );
   }
 }

@@ -168,6 +168,5 @@ class FavouriteSingleton {
 
 abstract class FavouriteEvents {
   void onFavouriteAdded(int productId);
-
   void onFavouriteDeleted(int productId);
 }

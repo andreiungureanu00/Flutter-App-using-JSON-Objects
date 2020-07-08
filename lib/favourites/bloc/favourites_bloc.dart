@@ -15,16 +15,16 @@ class FavouritesBloc extends Bloc<FavouritesEvent, FavouritesState> {
   @override
   Stream<FavouritesState> mapEventToState(FavouritesEvent event) async* {
     if (event is LoadFavouriteProducts) {
-      getProductsFromDb();
+      await getProductsFromDb();
       yield FavouriteProductsLoaded();
     }
     if (event is ReloadFavouriteProducts) {
-      getProductsFromDb();
+      await getProductsFromDb();
       yield FavouriteProductsReloaded();
     }
   }
 
-  getProductsFromDb() async {
+  Future<void> getProductsFromDb() async {
     productList = [];
     productList = await FavouriteSingleton().getProducts();
 
